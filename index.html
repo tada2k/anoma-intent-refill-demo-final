@@ -3,45 +3,77 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Anoma Intent Refill Demo — One-file</title>
+<title>Anoma Intent Refill — Clean Demo</title>
 <style>
   :root{
-    --bg:#0b0f14; --card:#121821; --ink:#e9eef5; --sub:#a8b3c4;
-    --pri:#5aa8ff; --ok:#35d49a; --bad:#ff6b6b; --mut:#293243;
-    --ring: 0 0 0 3px rgba(90,168,255,.25);
+    --bg:#0b0f14; --card:#111722; --ink:#eaf0f7; --sub:#a6b2c6;
+    --mut:#273248; --ring:0 0 0 3px rgba(90,168,255,.25);
+    --pri1:#5aa8ff; --pri2:#3b79ff; --ok1:#35d49a; --ok2:#109765;
+    --bad1:#ff6b6b; --bad2:#e64b4b; --accent:#8ad1ff;
   }
   *{box-sizing:border-box}
   body{
-    margin:0; min-height:100svh; display:flex; align-items:center; justify-content:center; padding:28px;
-    font:500 16px/1.5 system-ui,-apple-system,Segoe UI,Inter,Roboto,Ubuntu; color:var(--ink);
-    background:radial-gradient(1200px 800px at 80% -10%, #132033, #0b0f14 40%, #0b0f14);
+    margin:0; font:500 16px/1.55 system-ui,-apple-system,Segoe UI,Inter,Roboto,Ubuntu;
+    color:var(--ink);
+    background:
+      radial-gradient(1100px 700px at 80% -10%, #142136, transparent 40%),
+      linear-gradient(180deg,#0b0f14,#0b0f14);
+    min-height:100svh; display:flex; align-items:center; justify-content:center; padding:26px;
   }
   .wrap{width:min(980px,100%); display:grid; gap:16px}
   header{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap}
-  .title{font-weight:800; letter-spacing:.2px; line-height:1.1; font-size:28px}
+  .brand{
+    display:flex; align-items:center; gap:12px
+  }
+  .logo{
+    width:36px; height:36px; border-radius:10px;
+    background:linear-gradient(180deg,#1f2b3f,#0c1018); border:1px solid #21304a;
+    display:grid; place-items:center; font-weight:900; color:#9dd2ff; letter-spacing:1px;
+  }
+  .title{font-weight:900; letter-spacing:.2px; line-height:1.08; font-size:28px}
   .subtitle{color:var(--sub); font-size:14px; margin-top:4px}
-  .panel{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-    border:1px solid var(--mut); border-radius:16px; padding:18px; box-shadow: 0 12px 30px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06);}
-  .grid{display:grid; gap:14px}
-  label{display:block; font-size:13px; color:var(--sub); margin-bottom:6px}
+  .pill{background:#0f1622; border:1px solid var(--mut); padding:6px 10px; border-radius:999px; color:var(--sub); font-size:12px}
+  .panel{
+    background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015));
+    border:1px solid var(--mut); border-radius:16px; padding:18px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .steps{display:grid; gap:12px}
+  .step{
+    border:1px solid #1f2b38; border-radius:14px; padding:14px; background:#0e1522;
+  }
+  .step h3{margin:0 0 8px 0; font-size:16px; letter-spacing:.2px}
+  .grid{display:grid; gap:12px}
+  .row{display:flex; gap:12px; flex-wrap:wrap}
+  .col{flex:1 1 230px}
+  label{display:block; font-size:12px; color:var(--sub); margin-bottom:6px}
   input,select,textarea{
     width:100%; padding:10px 12px; border-radius:10px; border:1px solid #1f2938; background:#0f1622; color:var(--ink);
     outline:none; transition:.18s ease;
   }
   input:focus,select:focus,textarea:focus{box-shadow:var(--ring); border-color:#2f405c}
-  .row{display:flex; gap:12px; flex-wrap:wrap}
-  .col{flex:1 1 240px}
-  button{appearance:none; border:1px solid var(--mut); background:var(--card); color:var(--ink);
-    padding:10px 14px; border-radius:10px; cursor:pointer; transition:.18s ease; font-weight:700}
-  button:hover{transform:translateY(-1px); box-shadow:var(--ring)}
-  .primary{border-color:transparent; background:linear-gradient(180deg, #5aa8ff, #3b79ff); color:#081120}
-  .good{background:linear-gradient(180deg, #35d49a, #11a46f); border-color:transparent; color:#041911}
-  .ghost{background:#0f1622}
-  .stack{display:grid; gap:10px}
-  pre{margin:0; padding:12px; border-radius:12px; background:#0b121c; border:1px solid #1e2a3d; color:#cfe3ff; overflow:auto; font-size:13px}
-  .pill{background:#0f1622; border:1px solid #273248; padding:6px 10px; border-radius:999px; color:var(--sub); font-size:12px}
-  .footer{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px; flex-wrap:wrap}
   .hint{color:var(--sub); font-size:12px}
+  .btns{display:flex; gap:10px; flex-wrap:wrap}
+  button{
+    appearance:none; border:1px solid var(--mut); background:#121a28; color:var(--ink);
+    padding:10px 14px; border-radius:10px; cursor:pointer; transition:.18s ease; font-weight:800; letter-spacing:.2px
+  }
+  button:hover{transform:translateY(-1px); box-shadow:var(--ring)}
+  .primary{border-color:transparent; background:linear-gradient(180deg,var(--pri1),var(--pri2)); color:#07101e}
+  .good{border-color:transparent; background:linear-gradient(180deg,var(--ok1),var(--ok2)); color:#041a12}
+  .bad{border-color:transparent; background:linear-gradient(180deg,var(--bad1),var(--bad2))}
+  pre{
+    margin:0; padding:12px; border-radius:12px;
+    background:#0b121c; border:1px solid #1e2a3d; color:#cfe3ff;
+    overflow:auto; font-size:13px; max-height:320px;
+  }
+  .footer{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px; flex-wrap:wrap}
+  .status{display:flex; align-items:center; gap:8px; color:var(--sub); font-size:13px}
+  .dot{width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 3px rgba(138,209,255,.15)}
+  details{border:1px dashed #2b364b; border-radius:12px; padding:10px 12px; background:rgba(138,209,255,.06)}
+  summary{cursor:pointer; color:#b8d9ff}
+  .hero-tip{display:flex; align-items:center; gap:10px; color:#c9e6ff; font-size:14px}
+  .hero-tip b{color:#fff}
   @media (max-width:640px){.title{font-size:22px}}
 </style>
 </head>
@@ -49,170 +81,200 @@
   <div class="wrap">
     <header>
       <div>
-        <div class="title">Anoma “Intent Refill” — Interactive Mock</div>
-        <div class="subtitle">Say what you want → see the solver route → simulate settlement. Client-side only.</div>
+        <div class="brand">
+          <div class="logo">AN</div>
+          <div>
+            <div class="title">Intent Refill — Anoma Mock</div>
+            <div class="subtitle">Say what you want → see solver route → simulate settlement (frontend only)</div>
+          </div>
+        </div>
       </div>
-      <div class="row">
-        <span class="pill" id="status">Ready</span>
-      </div>
+      <div class="pill" id="status">Ready</div>
     </header>
 
-    <!-- FORM -->
     <section class="panel">
-      <div class="grid">
-        <div class="row">
-          <div class="col">
-            <label>Source Chain</label>
-            <select id="srcChain">
-              <option value="ethereum">Ethereum</option>
-              <option value="solana">Solana</option>
-              <option value="arbitrum">Arbitrum</option>
-              <option value="base">Base</option>
-            </select>
-          </div>
-          <div class="col">
-            <label>Asset You Have</label>
-            <select id="haveAsset">
-              <option>USDC</option>
-              <option>ETH</option>
-              <option>DAI</option>
-              <option>USDT</option>
-            </select>
-          </div>
-          <div class="col">
-            <label>Balance (simulated)</label>
-            <input id="balance" type="number" value="1000" min="0" step="0.01" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col">
-            <label>Destination Chain</label>
-            <select id="dstChain">
-              <option value="arbitrum">Arbitrum</option>
-              <option value="ethereum">Ethereum</option>
-              <option value="solana">Solana</option>
-              <option value="base">Base</option>
-            </select>
-          </div>
-          <div class="col">
-            <label>Want to receive (asset)</label>
-            <select id="wantAsset">
-              <option>ETH</option>
-              <option>USDC</option>
-              <option>DAI</option>
-            </select>
-          </div>
-          <div class="col">
-            <label>Amount</label>
-            <input id="amount" type="number" value="0.01" min="0" step="0.0001" />
-          </div>
-        </div>
-
-        <div>
-          <label>Destination Wallet</label>
-          <input id="dstWallet" placeholder="0x… or any address" value="0xABCD...1234" />
-        </div>
-
-        <div>
-          <label>Constraints (optional)</label>
-          <textarea id="constraints" rows="3" placeholder="e.g. settle within 5 minutes, max slippage 0.5%, private matching"></textarea>
-        </div>
-
-        <div class="row">
-          <button class="primary" id="gen">Generate Intent</button>
-          <button class="ghost" id="mock">Simulate Solver Route</button>
-          <button class="good" id="settle">Settle (mock)</button>
-        </div>
-        <div class="hint">Flow: Fill → Generate Intent → Simulate Solver Route → Settle.</div>
-      </div>
+      <div class="hero-tip">💡 <b>Tip:</b> Demo này <i>mô phỏng</i>. Không gọi chain thật, chỉ minh họa flow “intent → solver → settle”.</div>
     </section>
 
-    <!-- OUTPUTS -->
-    <section class="panel">
-      <div class="stack">
-        <div>
-          <label>Intent (JSON)</label>
-          <pre id="intentBox">{}</pre>
-        </div>
-        <div>
-          <label>Solver Proposed Route</label>
-          <pre id="routeBox">No route yet.</pre>
-        </div>
-        <div class="footer">
-          <span class="hint">This is a frontend-only mock. No keys, no real chain calls.</span>
+    <section class="panel steps">
+      <!-- STEP 1 -->
+      <article class="step">
+        <h3>Step 1 · Describe your intent</h3>
+        <div class="grid">
           <div class="row">
+            <div class="col">
+              <label>Source Chain</label>
+              <select id="srcChain">
+                <option value="ethereum">Ethereum</option>
+                <option value="solana">Solana</option>
+                <option value="arbitrum" selected>Arbitrum</option>
+                <option value="base">Base</option>
+              </select>
+            </div>
+            <div class="col">
+              <label>Asset You Have</label>
+              <select id="haveAsset">
+                <option>USDC</option>
+                <option selected>ETH</option>
+                <option>DAI</option>
+                <option>USDT</option>
+              </select>
+            </div>
+            <div class="col">
+              <label>Balance (simulated)</label>
+              <input id="balance" type="number" value="2" min="0" step="0.0001" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label>Destination Chain</label>
+              <select id="dstChain">
+                <option value="arbitrum">Arbitrum</option>
+                <option value="ethereum" selected>Ethereum</option>
+                <option value="solana">Solana</option>
+                <option value="base">Base</option>
+              </select>
+            </div>
+            <div class="col">
+              <label>Receive Asset</label>
+              <select id="wantAsset">
+                <option selected>ETH</option>
+                <option>USDC</option>
+                <option>DAI</option>
+              </select>
+            </div>
+            <div class="col">
+              <label>Amount</label>
+              <input id="amount" type="number" value="0.01" min="0" step="0.0001" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col" style="flex:2 1 300px">
+              <label>Destination Wallet</label>
+              <input id="dstWallet" placeholder="0x… or any address" value="0xABCD1234EF567890..." />
+            </div>
+            <div class="col">
+              <label>Privacy</label>
+              <select id="privacy">
+                <option value="private_by_default" selected>Private by default</option>
+                <option value="public_matching">Public matching</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label>Constraints (optional)</label>
+            <textarea id="constraints" rows="3" placeholder="e.g. settle within 5 minutes, max slippage 0.5%, fee in USDC"></textarea>
+          </div>
+          <div class="btns">
+            <button class="primary" id="gen">Generate Intent</button>
+            <span class="hint">Fill the fields then generate intent JSON</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- STEP 2 -->
+      <article class="step">
+        <h3>Step 2 · Solver proposal</h3>
+        <div class="grid">
+          <div class="btns">
+            <button id="mock">Simulate Solver Route</button>
+            <span class="hint">Creates a realistic route: swap → bridge → final transfer</span>
+          </div>
+          <pre id="intentBox" aria-label="intent-json">{}</pre>
+          <pre id="routeBox" aria-label="route-json">No route yet.</pre>
+          <div class="btns">
             <button id="copyIntent">Copy Intent</button>
             <button id="copyRoute">Copy Route</button>
           </div>
+          <details>
+            <summary>What’s happening here?</summary>
+            <div class="hint" style="margin-top:6px">
+              Intent mô tả “kết quả mong muốn”. “Solver” tìm đường tối ưu phù hợp ràng buộc (phí, thời gian, privacy) rồi đề xuất “hops”.
+            </div>
+          </details>
         </div>
-      </div>
+      </article>
+
+      <!-- STEP 3 -->
+      <article class="step">
+        <h3>Step 3 · Settlement</h3>
+        <div class="grid">
+          <div class="btns">
+            <button class="good" id="settle">Settle (mock)</button>
+            <button class="bad" id="reset">Reset</button>
+            <span class="hint">This writes a mock “settled” result</span>
+          </div>
+          <div class="footer">
+            <div class="status"><span class="dot"></span><span id="statusMsg">Waiting for action…</span></div>
+            <span class="pill">Front-end demo • No wallets • No chain calls</span>
+          </div>
+        </div>
+      </article>
     </section>
   </div>
 
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const status = $("status");
-  const intentBox = $("intentBox");
-  const routeBox = $("routeBox");
+  const setStatus = t => { $("status").textContent = t; $("statusMsg").textContent = t; };
 
-  function setStatus(txt){ status.textContent = txt; }
+  function val(id){ const el=$(id); return el.type==="number" ? Number(el.value||"0") : el.value.trim(); }
 
   function buildIntent(){
-    const srcChain = $("srcChain").value;
-    const haveAsset = $("haveAsset").value;
-    const balance = parseFloat($("balance").value||"0");
-    const dstChain = $("dstChain").value;
-    const wantAsset = $("wantAsset").value;
-    const amount = parseFloat($("amount").value||"0");
-    const dstWallet = $("dstWallet").value.trim();
-    const constraints = $("constraints").value.trim();
-
-    return {
+    const intent = {
       type: "refill_gas",
-      user: { dstWallet },
-      have: { chain: srcChain, asset: haveAsset, balance },
-      want: { chain: dstChain, asset: wantAsset, amount },
-      constraints: constraints ? constraints.split(",").map(s=>s.trim()) : [],
-      privacy: { matching: "private_by_default", reveal_on_settlement: true },
-      fees: { payer: "bundled", asset: haveAsset },
+      user: { dstWallet: val("dstWallet") },
+      have: { chain: val("srcChain"), asset: val("haveAsset"), balance: Number(val("balance").toFixed ? val("balance") : val("balance")) },
+      want: { chain: val("dstChain"), asset: val("wantAsset"), amount: Number(val("amount")) },
+      constraints: (val("constraints") ? val("constraints").split(",").map(s=>s.trim()).filter(Boolean) : []),
+      privacy: { matching: val("privacy"), reveal_on_settlement: true },
+      fees: { payer: "bundled", asset: val("haveAsset") },
       timestamp: new Date().toISOString()
     };
+    return intent;
   }
 
   function pretty(o){ return JSON.stringify(o, null, 2); }
 
   function simulateRoute(intent){
-    // super simple mock “solver” logic
     const hops = [];
-    if(intent.have.chain !== intent.want.chain || intent.have.asset !== intent.want.asset){
-      // swap if asset differs
-      if(intent.have.asset !== intent.want.asset){
-        hops.push({ type:"swap", venue:"DEX-A", from:intent.have.asset, to:intent.want.asset, chain:intent.have.chain });
-      }
-      // bridge if chain differs
-      if(intent.have.chain !== intent.want.chain){
-        hops.push({ type:"bridge", via:"Bridge-X", from:intent.have.chain, to:intent.want.chain, asset:intent.want.asset });
-      }
+    // swap if asset differs
+    if(intent.have.asset !== intent.want.asset){
+      hops.push({ type:"swap", venue:"DEX-A", from:intent.have.asset, to:intent.want.asset, chain:intent.have.chain });
+    }
+    // bridge if chain differs
+    if(intent.have.chain !== intent.want.chain){
+      hops.push({ type:"bridge", via:"Bridge-X", from:intent.have.chain, to:intent.want.chain, asset:intent.want.asset });
     }
     // final transfer
     hops.push({ type:"transfer", chain:intent.want.chain, to:intent.user.dstWallet, asset:intent.want.asset, amount:intent.want.amount });
 
-    const estFee = Math.max(0.2, (0.001 * (intent.want.amount || 1))).toFixed(6);
+    const base = Math.max(0.15, 0.001 * (intent.want.amount || 1));
+    const estFee = Number(base.toFixed(6));
     const etaMin = 2 + Math.floor(Math.random()*5);
 
     return {
       solver: "mock-solver-001",
-      objective: "min_cost_private",
+      objective: intent.privacy.matching === "private_by_default" ? "min_cost_private" : "min_cost_public",
       hops,
       estimates: { fee_asset: intent.have.asset, fee_estimate: estFee, eta_minutes: etaMin },
       proof: "(zk-proof placeholder)",
-      note: "Demo route; no real chain interaction."
+      note: "Demo only — no real chain interaction."
     };
   }
 
+  // UI refs
+  const intentBox = $("intentBox");
+  const routeBox = $("routeBox");
+
   $("gen").addEventListener("click", ()=>{
+    // basic validation
+    if(!val("dstWallet")){ setStatus("Please enter destination wallet"); return; }
+    const amount = Number(val("amount"));
+    if(!amount || amount <= 0){ setStatus("Amount must be > 0"); return; }
+    const balance = Number(val("balance"));
+    if(balance <= 0){ setStatus("Balance must be > 0 (simulated)"); return; }
+
     const intent = buildIntent();
     intentBox.textContent = pretty(intent);
     routeBox.textContent = "No route yet.";
@@ -237,7 +299,7 @@
       if(!route.solver){ setStatus("Simulate route first"); return; }
       const result = {
         status: "settled",
-        txs: route.hops.map((h,i)=>({step:i+1, type:h.type, chain:h.chain||h.from||"—", ok:true})),
+        txs: route.hops.map((h,i)=>({ step:i+1, type:h.type, chain:h.chain||h.from||"—", ok:true })),
         settled_at: new Date().toISOString()
       };
       routeBox.textContent = pretty(result);
@@ -247,10 +309,24 @@
     }
   });
 
+  $("reset").addEventListener("click", ()=>{
+    intentBox.textContent = "{}";
+    routeBox.textContent = "No route yet.";
+    setStatus("Ready");
+  });
+
   $("copyIntent").addEventListener("click", ()=>{
     navigator.clipboard.writeText(intentBox.textContent||"{}");
     setStatus("Intent copied");
   });
   $("copyRoute").addEventListener("click", ()=>{
     navigator.clipboard.writeText(routeBox.textContent||"");
-    setStatus
+    setStatus("Route copied");
+  });
+
+  // warm
+  setStatus("Ready");
+})();
+</script>
+</body>
+</html>
