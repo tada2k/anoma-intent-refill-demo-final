@@ -1,76 +1,256 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Anoma — Intent Gas Refill (Demo)</title>
-<link rel="stylesheet" href="style.css"/>
-<meta name="description" content="Intent-centric gas refill demo: declare need, solver plans route, one-click settle (simulated)."/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Anoma Intent Refill Demo — One-file</title>
+<style>
+  :root{
+    --bg:#0b0f14; --card:#121821; --ink:#e9eef5; --sub:#a8b3c4;
+    --pri:#5aa8ff; --ok:#35d49a; --bad:#ff6b6b; --mut:#293243;
+    --ring: 0 0 0 3px rgba(90,168,255,.25);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100svh; display:flex; align-items:center; justify-content:center; padding:28px;
+    font:500 16px/1.5 system-ui,-apple-system,Segoe UI,Inter,Roboto,Ubuntu; color:var(--ink);
+    background:radial-gradient(1200px 800px at 80% -10%, #132033, #0b0f14 40%, #0b0f14);
+  }
+  .wrap{width:min(980px,100%); display:grid; gap:16px}
+  header{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap}
+  .title{font-weight:800; letter-spacing:.2px; line-height:1.1; font-size:28px}
+  .subtitle{color:var(--sub); font-size:14px; margin-top:4px}
+  .panel{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+    border:1px solid var(--mut); border-radius:16px; padding:18px; box-shadow: 0 12px 30px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06);}
+  .grid{display:grid; gap:14px}
+  label{display:block; font-size:13px; color:var(--sub); margin-bottom:6px}
+  input,select,textarea{
+    width:100%; padding:10px 12px; border-radius:10px; border:1px solid #1f2938; background:#0f1622; color:var(--ink);
+    outline:none; transition:.18s ease;
+  }
+  input:focus,select:focus,textarea:focus{box-shadow:var(--ring); border-color:#2f405c}
+  .row{display:flex; gap:12px; flex-wrap:wrap}
+  .col{flex:1 1 240px}
+  button{appearance:none; border:1px solid var(--mut); background:var(--card); color:var(--ink);
+    padding:10px 14px; border-radius:10px; cursor:pointer; transition:.18s ease; font-weight:700}
+  button:hover{transform:translateY(-1px); box-shadow:var(--ring)}
+  .primary{border-color:transparent; background:linear-gradient(180deg, #5aa8ff, #3b79ff); color:#081120}
+  .good{background:linear-gradient(180deg, #35d49a, #11a46f); border-color:transparent; color:#041911}
+  .ghost{background:#0f1622}
+  .stack{display:grid; gap:10px}
+  pre{margin:0; padding:12px; border-radius:12px; background:#0b121c; border:1px solid #1e2a3d; color:#cfe3ff; overflow:auto; font-size:13px}
+  .pill{background:#0f1622; border:1px solid #273248; padding:6px 10px; border-radius:999px; color:var(--sub); font-size:12px}
+  .footer{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px; flex-wrap:wrap}
+  .hint{color:var(--sub); font-size:12px}
+  @media (max-width:640px){.title{font-size:22px}}
+</style>
 </head>
 <body>
   <div class="wrap">
-    <header class="row">
-      <div class="brand">
-        <div class="title">Anoma — Intent Gas Refill</div>
-        <div class="subtitle">Say what you want. The system plans the route.</div>
+    <header>
+      <div>
+        <div class="title">Anoma “Intent Refill” — Interactive Mock</div>
+        <div class="subtitle">Say what you want → see the solver route → simulate settlement. Client-side only.</div>
       </div>
-      <div class="controls">
-        <button id="newTurn" class="primary">New Demo Session</button>
-        <button id="reset" class="ghost">Reset</button>
+      <div class="row">
+        <span class="pill" id="status">Ready</span>
       </div>
     </header>
 
+    <!-- FORM -->
     <section class="panel">
-      <div class="grid2">
-        <div>
-          <label class="lbl">Destination chain</label>
-          <select id="destChain" class="input">
-            <option value="Arbitrum">Arbitrum</option>
-            <option value="Base">Base</option>
-            <option value="Optimism">Optimism</option>
-            <option value="Polygon">Polygon</option>
-          </select>
+      <div class="grid">
+        <div class="row">
+          <div class="col">
+            <label>Source Chain</label>
+            <select id="srcChain">
+              <option value="ethereum">Ethereum</option>
+              <option value="solana">Solana</option>
+              <option value="arbitrum">Arbitrum</option>
+              <option value="base">Base</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Asset You Have</label>
+            <select id="haveAsset">
+              <option>USDC</option>
+              <option>ETH</option>
+              <option>DAI</option>
+              <option>USDT</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Balance (simulated)</label>
+            <input id="balance" type="number" value="1000" min="0" step="0.01" />
+          </div>
         </div>
-        <div>
-          <label class="lbl">Destination address</label>
-          <input id="destAddr" class="input" placeholder="0x… your wallet on target chain"/>
+
+        <div class="row">
+          <div class="col">
+            <label>Destination Chain</label>
+            <select id="dstChain">
+              <option value="arbitrum">Arbitrum</option>
+              <option value="ethereum">Ethereum</option>
+              <option value="solana">Solana</option>
+              <option value="base">Base</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Want to receive (asset)</label>
+            <select id="wantAsset">
+              <option>ETH</option>
+              <option>USDC</option>
+              <option>DAI</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Amount</label>
+            <input id="amount" type="number" value="0.01" min="0" step="0.0001" />
+          </div>
         </div>
+
         <div>
-          <label class="lbl">Gas amount needed</label>
-          <input id="needAmt" class="input" type="number" step="0.0001" min="0" placeholder="e.g. 0.01"/>
+          <label>Destination Wallet</label>
+          <input id="dstWallet" placeholder="0x… or any address" value="0xABCD...1234" />
         </div>
+
         <div>
-          <label class="lbl">Time window (min)</label>
-          <input id="timeWin" class="input" type="number" step="1" min="1" value="15"/>
+          <label>Constraints (optional)</label>
+          <textarea id="constraints" rows="3" placeholder="e.g. settle within 5 minutes, max slippage 0.5%, private matching"></textarea>
         </div>
-      </div>
-      <div class="row">
-        <button id="plan" class="primary">Plan Route</button>
-        <button id="copy" class="ghost">Copy Intent</button>
+
+        <div class="row">
+          <button class="primary" id="gen">Generate Intent</button>
+          <button class="ghost" id="mock">Simulate Solver Route</button>
+          <button class="good" id="settle">Settle (mock)</button>
+        </div>
+        <div class="hint">Flow: Fill → Generate Intent → Simulate Solver Route → Settle.</div>
       </div>
     </section>
 
-    <section id="intent" class="panel">
-      <h3 class="h">Intent</h3>
-      <pre id="intentJson" class="code">—</pre>
-    </section>
-
-    <section id="route" class="panel">
-      <h3 class="h">Proposed Route</h3>
-      <ul id="steps" class="steps"></ul>
-      <div class="row">
-        <div class="pill" id="est">—</div>
-        <button id="settle" class="good">Settle (Simulated)</button>
+    <!-- OUTPUTS -->
+    <section class="panel">
+      <div class="stack">
+        <div>
+          <label>Intent (JSON)</label>
+          <pre id="intentBox">{}</pre>
+        </div>
+        <div>
+          <label>Solver Proposed Route</label>
+          <pre id="routeBox">No route yet.</pre>
+        </div>
+        <div class="footer">
+          <span class="hint">This is a frontend-only mock. No keys, no real chain calls.</span>
+          <div class="row">
+            <button id="copyIntent">Copy Intent</button>
+            <button id="copyRoute">Copy Route</button>
+          </div>
+        </div>
       </div>
-      <div id="result" class="result"></div>
     </section>
-
-    <footer class="footer">
-      <span class="muted">Demo only. No wallet or network calls.</span>
-      <a class="link" href="https://anoma.net/" target="_blank" rel="noopener">Learn more about Anoma</a>
-    </footer>
   </div>
 
-<script src="script.js"></script>
-</body>
-</html>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const status = $("status");
+  const intentBox = $("intentBox");
+  const routeBox = $("routeBox");
+
+  function setStatus(txt){ status.textContent = txt; }
+
+  function buildIntent(){
+    const srcChain = $("srcChain").value;
+    const haveAsset = $("haveAsset").value;
+    const balance = parseFloat($("balance").value||"0");
+    const dstChain = $("dstChain").value;
+    const wantAsset = $("wantAsset").value;
+    const amount = parseFloat($("amount").value||"0");
+    const dstWallet = $("dstWallet").value.trim();
+    const constraints = $("constraints").value.trim();
+
+    return {
+      type: "refill_gas",
+      user: { dstWallet },
+      have: { chain: srcChain, asset: haveAsset, balance },
+      want: { chain: dstChain, asset: wantAsset, amount },
+      constraints: constraints ? constraints.split(",").map(s=>s.trim()) : [],
+      privacy: { matching: "private_by_default", reveal_on_settlement: true },
+      fees: { payer: "bundled", asset: haveAsset },
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  function pretty(o){ return JSON.stringify(o, null, 2); }
+
+  function simulateRoute(intent){
+    // super simple mock “solver” logic
+    const hops = [];
+    if(intent.have.chain !== intent.want.chain || intent.have.asset !== intent.want.asset){
+      // swap if asset differs
+      if(intent.have.asset !== intent.want.asset){
+        hops.push({ type:"swap", venue:"DEX-A", from:intent.have.asset, to:intent.want.asset, chain:intent.have.chain });
+      }
+      // bridge if chain differs
+      if(intent.have.chain !== intent.want.chain){
+        hops.push({ type:"bridge", via:"Bridge-X", from:intent.have.chain, to:intent.want.chain, asset:intent.want.asset });
+      }
+    }
+    // final transfer
+    hops.push({ type:"transfer", chain:intent.want.chain, to:intent.user.dstWallet, asset:intent.want.asset, amount:intent.want.amount });
+
+    const estFee = Math.max(0.2, (0.001 * (intent.want.amount || 1))).toFixed(6);
+    const etaMin = 2 + Math.floor(Math.random()*5);
+
+    return {
+      solver: "mock-solver-001",
+      objective: "min_cost_private",
+      hops,
+      estimates: { fee_asset: intent.have.asset, fee_estimate: estFee, eta_minutes: etaMin },
+      proof: "(zk-proof placeholder)",
+      note: "Demo route; no real chain interaction."
+    };
+  }
+
+  $("gen").addEventListener("click", ()=>{
+    const intent = buildIntent();
+    intentBox.textContent = pretty(intent);
+    routeBox.textContent = "No route yet.";
+    setStatus("Intent generated");
+  });
+
+  $("mock").addEventListener("click", ()=>{
+    try{
+      const intent = JSON.parse(intentBox.textContent || "{}");
+      if(!intent.type){ setStatus("Generate intent first"); return; }
+      const route = simulateRoute(intent);
+      routeBox.textContent = pretty(route);
+      setStatus("Route proposed");
+    }catch(e){
+      setStatus("Invalid intent JSON");
+    }
+  });
+
+  $("settle").addEventListener("click", ()=>{
+    try{
+      const route = JSON.parse(routeBox.textContent || "{}");
+      if(!route.solver){ setStatus("Simulate route first"); return; }
+      const result = {
+        status: "settled",
+        txs: route.hops.map((h,i)=>({step:i+1, type:h.type, chain:h.chain||h.from||"—", ok:true})),
+        settled_at: new Date().toISOString()
+      };
+      routeBox.textContent = pretty(result);
+      setStatus("Settled (mock)");
+    }catch(e){
+      setStatus("No route to settle");
+    }
+  });
+
+  $("copyIntent").addEventListener("click", ()=>{
+    navigator.clipboard.writeText(intentBox.textContent||"{}");
+    setStatus("Intent copied");
+  });
+  $("copyRoute").addEventListener("click", ()=>{
+    navigator.clipboard.writeText(routeBox.textContent||"");
+    setStatus
